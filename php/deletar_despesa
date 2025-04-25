@@ -1,0 +1,35 @@
+<?php
+$host = 'www.thyagoquintas.com.br:3306';  
+$db   = 'engenharia_24';                   
+$user = 'engenharia_24';                 
+$pass = 'botocorderosa';                
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    if (isset($_POST['DESPESA_ID'])) {
+        $despesaId = $_POST['DESPESA_ID'];
+
+        // Deletar a despesa
+        $sql = "DELETE FROM DESPESA_RECEITA WHERE DESPES_ID = :despesaId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['despesaId' => $despesaId]);
+
+        echo json_encode(['status' => 'Despesa deletada com sucesso']);
+    } else {
+        echo json_encode(['error' => 'ID da despesa não informado']);
+    }
+
+} catch (PDOException $e) {
+    echo "Erro de conexão: " . $e->getMessage();
+    exit;
+}
+?>

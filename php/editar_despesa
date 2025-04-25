@@ -1,0 +1,53 @@
+<?php
+$host = 'www.thyagoquintas.com.br:3306';
+$db   = 'engenharia_24';                   
+$user = 'engenharia_24';                 
+$pass = 'botocorderosa';                
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    if (isset($_POST['DESPESA_ID'], $_POST['DESPESA_NOME'], $_POST['DESPESA_VALOR'], $_POST['DESPESA_VENCIMENTO'], $_POST['DESPESA_CATEGORIA'], $_POST['DESPESA_TIPO'], $_POST['DESPESA_RECEBEDOR'], $_POST['DESPESA_STATUS'])) {
+        $despesaId = $_POST['DESPESA_ID'];
+        $despesNome = $_POST['DESPESA_NOME'];
+        $despesaValor = $_POST['DESPESA_VALOR'];
+        $despesaVencimento = $_POST['DESPESA_VENCIMENTO'];
+        $despesaCategoria = $_POST['DESPESA_CATEGORIA'];
+        $despesaTipo = $_POST['DESPESA_TIPO'];
+        $despesaRecebedor = $_POST['DESPESA_RECEBEDOR'];
+        $despesaStatus = $_POST['DESPESA_STATUS'];
+        
+        // Atualizar a despesa no banco de dados
+        $sql = "UPDATE DESPESA_RECEITA SET DESPESA_NOME = :despesaNome, DESPESA_VALOR = :despesaValor, DESPESA_VENCIMENTO = :despesaVencimento, DESPESA_CATEGORIA = :despesaCategoria, DESPESA_TIPO = :despesaTipo, DESPESA_RECEBEDOR = :despesaRecebedor, DESPESA_STATUS = :despesaStatus
+                WHERE DESPESA_ID = :despesaId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'despesaNome' => $despesaNome,
+            'despesaValor' => $despesaValor,
+            'despesaVencimento' => $despesaVencimento,
+            'despesaCategoria' => $despesaCategoria,
+            'despesaTipo' => $despesaTipo,
+            'despesaRecebedor' => $despesaRecebedor,
+            'despesaStatus' => $despesaStatus,
+            'despesaId' => $despesaId
+        ]);
+
+        echo json_encode(['status' => 'Valor atualizado com sucesso']);
+    } else {
+        echo json_encode(['error' => 'Dados incompletos']);
+    }
+
+} catch (PDOException $e) {
+    echo "Erro de conexão: " . $e->getMessage();
+    exit;
+}
+?>
+

@@ -1,0 +1,51 @@
+<?php 
+$host = 'www.thyagoquintas.com.br:3306';  
+$db   = 'engenharia_24';                   
+$user = 'engenharia_24';                 
+$pass = 'botocorderosa';                
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    if (isset($_POST['DESPESA_NOME'], $_POST['DESPESA_VALOR'], $_POST['DESPESA_VENCIMENTO'], $_POST['DESPESA_CATEGORIA'], $_POST['DESPESA_TIPO'], $_POST['DESPESA_RECEBEDOR'], $_POST['DESPESA_STATUS'])) {
+        $despesaNome = $_POST['DESPESA_NOME'];
+        $despesaValor = $_POST['DESPESA_VALOR'];
+        $despesaVencimento = $_POST['DESPESA_VENCIMENTO'];
+        $despesaCategoria = $_POST['DESPESA_CATEGORIA'];
+        $despesaTipo = $_POST['DESPESA_TIPO'];
+        $despesaRecebedor = $_POST['DESPESA_RECEBEDOR'];
+        $despesaStatus = $_POST['DESPESA_STATUS'];
+        
+
+        // Inserir a despesa
+        $sql = "INSERT INTO DESPESA_RECEITA (DESPESA_NOME, DESPESA_VALOR, DESPESA_VENCIMENTO, DESPESA_CATEGORIA, DESPESA_TIPO, DESPESA_RECEBEDOR, DESPESA_STATUS)
+                VALUES (:despesaNome, :despesaValor, :despesaVencimento, :despesaCategoria, :despesaTipo, :despesaRecebedor, :despesaStatus)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'despesaNome' => $despesaNome,
+            'despesaValor' => $despesaValor,
+            'despesaVencimento' => $despesaVencimento,
+            'despesaCategoria' => $despesaCategoria,
+            'despesaTipo' => $despesaTipo,
+            'despesaRecebedor' => $despesaRecebedor,
+            'despesaStatus' => $despesaStatus
+        ]);
+
+        echo json_encode(['status' => 'Despesa incluído com sucesso']);
+    } else {
+        echo json_encode(['error' => 'Dados incompletos']);
+    }
+
+} catch (PDOException $e) {
+    echo "Erro de conexão: " . $e->getMessage();
+    exit;
+}
+?>
